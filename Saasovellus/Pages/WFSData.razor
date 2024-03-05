@@ -1,0 +1,59 @@
+﻿@page "/wfsdata"
+
+@using System.Net.Http
+@inject HttpClient HttpClient
+@using System.Xml;
+
+<button class="btn btn-primary" @onclick="CallWFS">Click me</button>
+
+@code {
+    private string wfsUrl = "http://opendata.fmi.fi/wfs";
+    private string wfsRequest = "Describe";
+
+    private async Task<string> GetWFSDataAsync()
+    {
+        try
+        {
+            // HttpResponseMessage response = await HttpClient.GetAsync(wfsUrl + "?" + wfsRequest);
+            HttpResponseMessage response = await HttpClient.GetAsync("http://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&place=helsinki&");
+            response.EnsureSuccessStatusCode(); // Tarkista, että pyyntö onnistui
+            string responseData = await response.Content.ReadAsStringAsync();
+            return responseData;
+        }
+        catch (Exception ex)
+        {
+            return $"Virhe: {ex.Message}";
+        }
+    }
+
+    private async Task CallWFS()
+    {
+        string wfsData = await GetWFSDataAsync();
+        // Käsittele WFS-palvelun vastaus tässä
+        // ReadGML(wfsData);
+        Console.WriteLine(wfsData);
+    }
+
+    // public void ReadGML(string gmlFilePath)
+    // {
+    //     try
+    //     {
+    //         XmlDocument xmlDoc = new XmlDocument();
+    //         xmlDoc.Load(gmlFilePath);
+
+    //         // Käy läpi GML-tiedoston ominaisuudet ja geometriat
+    //         XmlNodeList featureNodes = xmlDoc.GetElementsByTagName("featureMember");
+
+    //         foreach (XmlNode featureNode in featureNodes)
+    //         {
+    //             // Tässä vaiheessa voit käsitellä haluamallasi tavalla GML-tiedoston sisältöä
+    //             // Voit käyttää XMLNode- ja XMLNodeList-luokkia työskennellessäsi GML-tiedoston kanssa
+    //             // Esimerkiksi voit hakea geometrian ja ominaisuustiedot ja käsitellä niitä edelleen.
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine("Virhe GML-tiedoston käsittelyssä: " + ex.Message);
+    //     }
+    // }
+}
