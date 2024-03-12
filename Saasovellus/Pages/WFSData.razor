@@ -15,7 +15,7 @@
         try
         {
             // HttpResponseMessage response = await HttpClient.GetAsync(wfsUrl + "?" + wfsRequest);
-            HttpResponseMessage response = await HttpClient.GetAsync("http://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&place=helsinki&");
+            HttpResponseMessage response = await HttpClient.GetAsync("http://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&place=mikkeli&");
             response.EnsureSuccessStatusCode(); // Tarkista, että pyyntö onnistui
             string responseData = await response.Content.ReadAsStringAsync();
             return responseData;
