@@ -52,9 +52,9 @@ else
 
     public class Hourly
     {
-        public DateTime Time { get; set; }
-        public float Temperature_2m { get; set; }
-        public int TemperatureF => 32 + (int)(Temperature_2m / 0.5556);
+        public DateTime[] Time { get; set; }
+        public float[] Temperature_2m { get; set; }
+        // public int TemperatureF => 32 + (int)(Temperature_2m / 0.5556);
     }
 
     public class WeatherForecast
