@@ -7,7 +7,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (true)
+@if (false)
 {
     <p><em>Loading...</em></p>
 }
@@ -23,14 +23,14 @@ else
             </tr>
         </thead>
         <tbody>
-@*             @foreach (var forecast in forecast)
+            @foreach (var forecast in forecast.Hourly.Time)
             {
                 <tr>
-                    <td>@forecast.Hourly.Time.ToShortDateString() zxdddd jee</td>
-                    <td>@forecast.Hourly.Temperature_2m lul</td>
-                    <td>@forecast.Hourly.TemperatureF</td>
+                    <td>@forecast.ToShortDateString() zxdddd jee</td>
+                    @* <td>@forecast.Temperature_2m lul</td>
+                    <td>@forecast.Hourly.TemperatureF</td> *@
                 </tr>
-            } *@
+            }
         </tbody>
     </table>
 }
