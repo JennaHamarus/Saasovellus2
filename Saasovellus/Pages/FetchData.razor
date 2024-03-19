@@ -7,7 +7,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (false)
+@if (forecast == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -23,10 +23,10 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecast.Hourly.Time)
+            @foreach (var forecast in forecast.Hourly.Temperature_2m)
             {
                 <tr>
-                    <td>@forecast.ToShortDateString() zxdddd jee</td>
+                    <td>@forecast.ToString() zxdddd jee</td>
                     @* <td>@forecast.Temperature_2m lul</td>
                     <td>@forecast.Hourly.TemperatureF</td> *@
                 </tr>
@@ -40,7 +40,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecast = await Http.GetFromJsonAsync<WeatherForecast>("sample-data/weather.json");
+        forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://api.open-meteo.com/v1/forecast?latitude=61.6886&longitude=27.2723&hourly=temperature_2m&timezone=auto");
     }
 
 
