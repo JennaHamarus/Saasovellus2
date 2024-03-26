@@ -41,6 +41,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+
         forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://api.open-meteo.com/v1/forecast?latitude=61.6886&longitude=27.2723&hourly=temperature_2m&timezone=auto");
     }
 
