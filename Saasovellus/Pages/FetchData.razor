@@ -27,8 +27,8 @@ else
             {
                 <tr>
                     <td></td>
-                    <td>@forecast.ToString() °C</td>
-                    <td>@(32 + (forecast / 0.5556)) F</td>
+                    <td>@((int)forecast) °C</td>
+                    <td>@(32 + (int)(forecast / 0.5556)) F</td>
                     @* <td>@forecast.Hourly.TemperatureF</td> *@
                 </tr>
             }
