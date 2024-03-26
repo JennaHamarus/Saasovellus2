@@ -18,6 +18,7 @@ else
             <tr>
                 <th>Date</th>
                 <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
                 <th>Summary</th>
             </tr>
         </thead>
@@ -27,8 +28,8 @@ else
                 <tr>
                     <td></td>
                     <td>@forecast.ToString() °C</td>
-                    @* <td>@forecast.Temperature_2m lul</td>
-                    <td>@forecast.Hourly.TemperatureF</td> *@
+                    <td>@(32 + (forecast / 0.5556)) F</td>
+                    @* <td>@forecast.Hourly.TemperatureF</td> *@
                 </tr>
             }
         </tbody>
