@@ -43,7 +43,16 @@ else
     {
         Dictionary<string, string> cordinates = 
         new Dictionary<string, string>();
-        cordinates.Add("sample1", "sample2");
+        string path = @"~/sample-data/coordinates.txt";
+        if (File.Exists(path))
+        {
+            string[] yeetLines = File.ReadAllLines(path);
+            foreach(string yeet in yeetLines)
+            {
+                string[] yeets = yeet.Split(":");
+                cordinates.Add(yeets[0],yeets[1]);
+            }
+        }
         forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://api.open-meteo.com/v1/forecast?latitude=61.6886&longitude=27.2723&hourly=temperature_2m&timezone=auto");
     }
 
