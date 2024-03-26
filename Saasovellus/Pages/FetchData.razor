@@ -18,7 +18,6 @@ else
             <tr>
                 <th>Date</th>
                 <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
                 <th>Summary</th>
             </tr>
         </thead>
@@ -26,7 +25,8 @@ else
             @foreach (var forecast in forecast.Hourly.Temperature_2m)
             {
                 <tr>
-                    <td>@forecast.ToString() zxdddd jee</td>
+                    <td></td>
+                    <td>@forecast.ToString() °C</td>
                     @* <td>@forecast.Temperature_2m lul</td>
                     <td>@forecast.Hourly.TemperatureF</td> *@
                 </tr>
