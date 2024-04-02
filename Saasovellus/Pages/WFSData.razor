@@ -2,21 +2,77 @@
 
 @using System.Net.Http
 @inject HttpClient HttpClient
-@using System.Xml;
+@using System.Text.Json
+@using System.Globalization;
+@using System.Linq;
+@using static Saasovellus.Pages.CityData;
 
-<button class="btn btn-primary" @onclick="CallWFS">Click me</button>
+<CityData Cities="@Cities" />
+
+<select @bind="SelectedCity"> 
+    <option value="">Select a city</option>
+    @foreach (var city in Cities) // Populoidaan dropdown valikko käymällä läpi Cities-lista
+    {
+            <option value="@city.Latitude,@city.Longitude">@city.Name</option>
+    }
+</select>
+
+<button class="btn btn-primary" @onclick="CallWFS">Hae viikon säätiedot</button>
+
+@if (weatherData != null) // Renderöidään taulukko
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                @foreach (var hour in Enumerable.Range(0, 24)) // Iteroidaan joka tunnille taulukkoon otsikko
+                {
+                    <th>@hour:00</th>
+
+                }
+            </tr>
+        </thead>
+            <tbody>
+            @foreach (var dateGroup in weatherData.hourly.time.Select((value, index) => new { value, index }).GroupBy(x => DateTime.Parse(x.value).Date)) // Grouping weather data by date
+            {
+                <tr>
+                    <td>@dateGroup.Key.ToString("dddd, dd MMMM yyyy")</td>
+                    @foreach (var hour in dateGroup) // Iteroidaan joka tunnille taulukkoon lämpötila
+                    {
+                        <td>@weatherData.hourly.temperature_2m[hour.index]</td>
+                    }
+                </tr>
+            }
+            </tbody>
+    </table>
+}
 
 @code {
-    private string wfsUrl = "http://opendata.fmi.fi/wfs";
+    private string wfsUrl = "https://api.open-meteo.com/v1";
     private string wfsRequest = "Describe";
+    private WeatherData weatherData; // Tässä pidetään sään data
+    private string SelectedCity { get; set; } //Dropdownin valittu kunta
 
-    private async Task<string> GetWFSDataAsync()
+    [Inject]
+    private CityData CityData { get; set; } //CityData inject
+    private List<City> Cities { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Hae cities
+        Cities = await CityData.GetCitiesAsync();
+    }
+
+    private async Task<string> GetWFSDataAsync(string latitude, string longitude) //Tällä metodilla haetaan säädata käyttäen koordinaatteja
     {
         try
         {
-            // HttpResponseMessage response = await HttpClient.GetAsync(wfsUrl + "?" + wfsRequest);
-            HttpResponseMessage response = await HttpClient.GetAsync("http://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&place=mikkeli&");
-            response.EnsureSuccessStatusCode(); // Tarkista, että pyyntö onnistui
+            //Määritellään API URL
+            string apiUrl = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m&timezone=auto";
+
+            //HTTP GET request
+            HttpResponseMessage response = await HttpClient.GetAsync(apiUrl);
+            response.EnsureSuccessStatusCode();
             string responseData = await response.Content.ReadAsStringAsync();
             return responseData;
         }
@@ -28,32 +84,23 @@
 
     private async Task CallWFS()
     {
-        string wfsData = await GetWFSDataAsync();
-        // Käsittele WFS-palvelun vastaus tässä
-        // ReadGML(wfsData);
-        Console.WriteLine(wfsData);
+        if (!string.IsNullOrEmpty(SelectedCity)) //Check et onko kunta valittu
+        {
+            var coordinates = SelectedCity.Split(","); //Jaa SelectedCity:stä tulevat koordinaatit
+            string latitude = coordinates[0];
+            string longitude = coordinates[1];
+            string wfsData = await GetWFSDataAsync(latitude, longitude); //Hae säädata
+            weatherData = JsonSerializer.Deserialize<WeatherData>(wfsData);
+        }
     }
 
-    // public void ReadGML(string gmlFilePath)
-    // {
-    //     try
-    //     {
-    //         XmlDocument xmlDoc = new XmlDocument();
-    //         xmlDoc.Load(gmlFilePath);
-
-    //         // Käy läpi GML-tiedoston ominaisuudet ja geometriat
-    //         XmlNodeList featureNodes = xmlDoc.GetElementsByTagName("featureMember");
-
-    //         foreach (XmlNode featureNode in featureNodes)
-    //         {
-    //             // Tässä vaiheessa voit käsitellä haluamallasi tavalla GML-tiedoston sisältöä
-    //             // Voit käyttää XMLNode- ja XMLNodeList-luokkia työskennellessäsi GML-tiedoston kanssa
-    //             // Esimerkiksi voit hakea geometrian ja ominaisuustiedot ja käsitellä niitä edelleen.
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine("Virhe GML-tiedoston käsittelyssä: " + ex.Message);
-    //     }
-    // }
+    public class WeatherData
+    {
+        public HourlyData hourly { get; set; }
+        public class HourlyData
+        {
+            public List<string> time { get; set; }
+            public List<double> temperature_2m { get; set; }
+        }
+    }
 }
