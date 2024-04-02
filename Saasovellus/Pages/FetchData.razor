@@ -13,6 +13,8 @@
 }
 else
 {
+    int luku = 0;
+    string kuvaus;
     <table class="table">
         <thead>
             <tr>
@@ -23,14 +25,31 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecast.Hourly.Temperature_2m)
+            @foreach (var item in forecast.Hourly.Temperature_2m)
             {
+                if(item < 0)
+                {
+                    kuvaus = "kylmä";
+                    if(item < -10)
+                    {
+                        kuvaus = "vitun kylmä";
+                    }
+                }
+                else
+                {
+                    kuvaus = "kuuma";
+                    if(item > 10)
+                    {
+                        kuvaus = "vitun kuuma";
+                    }
+                }
                 <tr>
-                    <td></td>
-                    <td>@((int)forecast) °C</td>
-                    <td>@(32 + (int)(forecast / 0.5556)) F</td>
-                    @* <td>@forecast.Hourly.TemperatureF</td> *@
+                    <td>@(forecast.Hourly.Time[luku])</td>
+                    <td>@((int)item) °C</td>
+                    <td>@(32 + (int)(item / 0.5556)) F</td>
+                    <td>@kuvaus</td>
                 </tr>
+                luku++;
             }
         </tbody>
     </table>
