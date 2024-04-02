@@ -7,12 +7,21 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
+
+<form action="/fetchdata">
+    <label for="fname">Sijainti</label>
+    <input type="text" @bind="location" />
+    <br><br>
+    <input type="submit" value="Submit" @onclick="GetCoords">
+</form>
+
 @if (forecast == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
+    @* Jos on objekti, tehää taulukko *@
     <table class="table">
         <thead>
             <tr>
@@ -27,9 +36,8 @@ else
             {
                 <tr>
                     <td></td>
-                    <td>@((int)forecast) °C</td>
-                    <td>@(32 + (int)(forecast / 0.5556)) F</td>
-                    @* <td>@forecast.Hourly.TemperatureF</td> *@
+                    <td>@((int)forecast) °C</td> @* Celsiusta *@
+                    <td>@(32 + (int)(forecast / 0.5556)) F</td> @* Fahrenheittii*@
                 </tr>
             }
         </tbody>
@@ -39,10 +47,17 @@ else
 @code {
     private WeatherForecast? forecast;
 
+    
+    string location = "";
+
+    public static void GetCoords()
+    {
+        
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        Dictionary<string, string> cordinates = 
-        new Dictionary<string, string>();
+        Dictionary<string, string> cordinates = new Dictionary<string, string>();
         string path = @"~/sample-data/coordinates.txt";
         if (File.Exists(path))
         {
