@@ -7,7 +7,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (true)
 {
     <p><em>Loading...</em></p>
 }
@@ -23,35 +23,50 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+@*             @foreach (var forecast in forecast)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@forecast.Hourly.Time.ToShortDateString() zxdddd jee</td>
+                    <td>@forecast.Hourly.Temperature_2m lul</td>
+                    <td>@forecast.Hourly.TemperatureF</td>
                 </tr>
-            }
+            } *@
         </tbody>
     </table>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private WeatherForecast? forecast;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        forecast = await Http.GetFromJsonAsync<WeatherForecast>("sample-data/weather.json");
+    }
+
+
+    public class Hourly_units
+    {
+        public string Time { get; set; }
+        public string Temperature_2m { get; set; }
+    }
+
+    public class Hourly
+    {
+        public DateTime Time { get; set; }
+        public float Temperature_2m { get; set; }
+        public int TemperatureF => 32 + (int)(Temperature_2m / 0.5556);
     }
 
     public class WeatherForecast
     {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
+        public float Generationtime_ms { get; set; }
+        public int UTC_offset_seconds { get; set; }
+        public string Timezone { get; set; }
+        public string Timezone_abbreviation { get; set; }
+        public float Elevation { get; set; }
+        public Hourly_units Hourly_units { get; set; }
+        public Hourly Hourly { get; set; }
     }
 }
