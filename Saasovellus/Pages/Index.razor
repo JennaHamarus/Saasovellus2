@@ -1,9 +1,118 @@
 ﻿@page "/"
+@inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Weather forecast</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Weather forecast</h1>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<form action="/fetchdata">
+    <label for="fname">Sijainti</label>
+    <input type="text" @bind="location" />
+    <br><br>
+    <input type="submit" value="Submit" @onclick="GetCoords">
+</form>
+
+@if (forecast == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @* Jos on objekti, tehää taulukko *@
+    int luku = 0;
+    string kuvaus;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in forecast.Hourly.Temperature_2m)
+            {
+                if (item < 0)
+                {
+                    kuvaus = "kylmä";
+                    if (item < -10)
+                    {
+                        kuvaus = "vitun kylmä";
+                    }
+                }
+                else
+                {
+                    kuvaus = "kuuma";
+                    if (item > 10)
+                    {
+                        kuvaus = "vitun kuuma";
+                    }
+                }
+                <tr>
+                    <td>@(forecast.Hourly.Time[luku])</td>
+                    <td>@((int)item) °C</td>
+                    <td>@(32 + (int)(item / 0.5556)) F</td>
+                    <td>@kuvaus</td>
+                </tr>
+                luku++;
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast? forecast;
+
+
+    string location = "";
+
+    public static void GetCoords()
+    {
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Dictionary<string, string> cordinates = new Dictionary<string, string>();
+        string path = @"~/sample-data/coordinates.txt";
+        if (File.Exists(path))
+        {
+            string[] yeetLines = File.ReadAllLines(path);
+            foreach (string yeet in yeetLines)
+            {
+                string[] yeets = yeet.Split(":");
+                cordinates.Add(yeets[0], yeets[1]);
+            }
+        }
+        forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://api.open-meteo.com/v1/forecast?latitude=61.6886&longitude=27.2723&hourly=temperature_2m&timezone=auto");
+    }
+
+
+    public class Hourly_units
+    {
+        public string Time { get; set; }
+        public string Temperature_2m { get; set; }
+    }
+
+    public class Hourly
+    {
+        public DateTime[] Time { get; set; }
+        public float[] Temperature_2m { get; set; }
+        // public int TemperatureF => 32 + (int)(Temperature_2m / 0.5556);
+    }
+
+    public class WeatherForecast
+    {
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
+        public float Generationtime_ms { get; set; }
+        public int UTC_offset_seconds { get; set; }
+        public string Timezone { get; set; }
+        public string Timezone_abbreviation { get; set; }
+        public float Elevation { get; set; }
+        public Hourly_units Hourly_units { get; set; }
+        public Hourly Hourly { get; set; }
+    }
+}
