@@ -34,12 +34,12 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in forecast.Hourly.Temperature_2m)
+            @foreach (var item in forecast.days[0].hours)
             {
-                if(item < 0)
+                if (item.temp < 0)
                 {
                     kuvaus = "kylmä";
-                    if(item < -10)
+                    if (item.temp < -10)
                     {
                         kuvaus = "vitun kylmä";
                     }
@@ -47,15 +47,15 @@ else
                 else
                 {
                     kuvaus = "kuuma";
-                    if(item > 10)
+                    if (item.temp > 10)
                     {
                         kuvaus = "vitun kuuma";
                     }
                 }
                 <tr>
-                    <td>@(forecast.Hourly.Time[luku])</td>
-                    <td>@((int)item) °C</td>
-                    <td>@(32 + (int)(item / 0.5556)) F</td>
+                    <td>@(item.datetime)</td>
+                    <td>@((int)item.temp) °C</td>
+                    <td>@((int)item.temp) F</td>
                     <td>@kuvaus</td>
                 </tr>
                 luku++;
@@ -88,26 +88,13 @@ else
                 cordinates.Add(yeets[0],yeets[1]);
             }
         }
-        forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://api.open-meteo.com/v1/forecast?latitude=61.6886&longitude=27.2723&hourly=temperature_2m&timezone=auto");
+        forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Mikkeli,Finland,FI?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
     }
 
-
-    public class Hourly_units
-    {
-        public string Time { get; set; }
-        public string Temperature_2m { get; set; }
-    }
-
-    public class Hourly
-    {
-        public DateTime[] Time { get; set; }
-        public float[] Temperature_2m { get; set; }
-        // public int TemperatureF => 32 + (int)(Temperature_2m / 0.5556);
-    }
 
     public class WeatherForecast
     {
-        public float queryCost { get; set; }
+        public int queryCost { get; set; }
         public float latitude { get; set; }
         public float longitude { get; set; }
         public string resolvedAddress { get; set; }
@@ -116,10 +103,10 @@ else
         public int tzoffset { get; set; }
         public string description { get; set; }
 
-        public days Hourly { get; set; }
+        public Days[] days { get; set; }
     }
 
-    public class days
+    public class Days
     {
         public DateTime[] datetime { get; set; }
         public int datetimeEpoch { get; set; }
@@ -155,8 +142,36 @@ else
         public string description { get; set; }
         public string icon { get; set; }
         public string[] stations { get; set; }
-        
+        public string sources { get; set; }
+        public Hours[] hours { get; set; }
     }
-
+    public class Hours
+    {
+        public DateTime[] datetime { get; set; }
+        public int datetimeEpoch { get; set; }
+        public float temp { get; set; }
+        public float feelslike { get; set; }
+        public float humidity { get; set; }
+        public float dew { get; set; }
+        public float precip { get; set; }
+        public int precipprob { get; set; }
+        public float snow { get; set; }
+        public float snowdepth { get; set; }
+        public string[] preciptype { get; set; }
+        public float windgust { get; set; }
+        public float windspeed { get; set; }
+        public int winddir { get; set; }
+        public int pressure { get; set; }
+        public float visibillity { get; set; }
+        public int cloudcover { get; set; }
+        public int solarradiation { get; set; }
+        public int solarenergy { get; set; }
+        public int uvindex { get; set; }
+        public int severerisk { get; set; }
+        public string conditions { get; set; }
+        public string icon { get; set; }
+        public string[] stations { get; set; }
+        public string source { get; set; }
+    }
 
 }
