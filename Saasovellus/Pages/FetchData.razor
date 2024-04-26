@@ -26,41 +26,29 @@ else
     int luku = 0;
     string kuvaus;
 
-    @* <p>@(forecast.GetType())</p> *@
+
     <table class="table">
         <thead>
             <tr>
                 <th>Date</th>
                 <th>Temp. (C)</th>
                 <th>Temp. (F)</th>
+                <th>Wind</th>
+                <th>Rainfall</th>
                 <th>Summary</th>
+
             </tr>
         </thead>
         <tbody>
             @foreach (var item in forecast.days[1].hours)
             {
-                if ((int)item.temp < 0)
-                {
-                    kuvaus = "<img src='linkki'>";
-                    if ((int)item.temp < -10)
-                    {
-                        kuvaus = "vitun kylmä";
-                    }
-                }
-                else
-                {
-                    kuvaus = "kuuma";
-                    if ((int)item.temp > 10)
-                    {
-                        kuvaus = "vitun kuuma";
-                    }
-                }
                 <tr>
                     <td>@(item.datetime)</td>
                     <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
                     <td>@((int)item.temp) F</td>
-
-                    <td>@kuvaus</td>
+                    <td>@(item.windspeed)</td>
+                    <td>@(item.precip) mm</td>
+                    <td>@(item.conditions)</td>
                 </tr>
                 luku++;
             }
@@ -79,28 +67,12 @@ else
         <tbody>
             @foreach (var item in forecast.days)
             {
-                if ((int)item.temp < 0)
-                {
-                    kuvaus = "<img src='linkki'>";
-                    if ((int)item.temp < -10)
-                    {
-                        kuvaus = "vitun kylmä";
-                    }
-                }
-                else
-                {
-                    kuvaus = "kuuma";
-                    if ((int)item.temp > 10)
-                    {
-                        kuvaus = "vitun kuuma";
-                    }
-                }
                 <tr>
                     <td>@(item.datetime)</td>
                     <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
                     <td>@((int)item.temp) F</td>
 
-                    <td>@kuvaus</td>
+                    <td>@item.description</td>
                 </tr>
                 luku++;
             }
