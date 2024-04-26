@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject HttpClient Http
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -31,7 +32,8 @@ else
 		<code>Alert: </code>
 		for (int i = 0; i < forecast.alerts.Length; i++)
 		{
-			<code>@forecast.alerts[i].description</code><br />
+			<code>@forecast.alerts[i].description</code>
+			<br />
 		}
 	}
 
@@ -94,7 +96,7 @@ else
 	private WeatherForecast? forecast;
 
 
-	string? location = "Ouagadougou";
+	string? location = "oulu fi";
 
 	public static void GetCoords()
 	{
@@ -112,9 +114,9 @@ else
 		{
 			forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + @location + "?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
 		}
-		catch (Exception e)
+		catch (HttpRequestException e)
 		{
-			Console.WriteLine(e);
+			await JsRuntime.InvokeVoidAsync("alert", "City not found\nTry adding city abbreviation as suffix.\nExample: Oulu FI");
 		}
 	}
 
