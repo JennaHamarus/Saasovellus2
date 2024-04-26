@@ -7,12 +7,52 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+
+<form action="/fetchdata">
+    <label for="fname">Sijainti</label>
+    <input type="text" @bind="location" />
+    <br><br>
+    <input type="submit" value="Submit" @onclick="GetCoords">
+</form>
+
+@if (forecast == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
+    @* Jos on objekti, tehää taulukko *@
+    int luku = 0;
+    string kuvaus;
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Wind</th>
+                <th>Rainfall</th>
+                <th>Summary</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in forecast.days[1].hours)
+            {
+                <tr>
+                    <td>@(item.datetime)</td>
+                    <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
+                    <td>@((int)item.temp) F</td>
+                    <td>@(item.windspeed)</td>
+                    <td>@(item.precip) mm</td>
+                    <td>@(item.conditions)</td>
+                </tr>
+                luku++;
+            }
+        </tbody>
+    </table>
+
     <table class="table">
         <thead>
             <tr>
@@ -23,35 +63,196 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var item in forecast.days)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@(item.datetime)</td>
+                    <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
+                    <td>@((int)item.temp) F</td>
+
+                    <td>@item.description</td>
                 </tr>
+                luku++;
             }
         </tbody>
     </table>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private WeatherForecast? forecast;
+
+
+    string location = "";
+
+    public static void GetCoords()
+    {
+
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        Dictionary<string, string> cordinates = new Dictionary<string, string>();
+        string path = @"~/sample-data/coordinates.txt";
+        if (File.Exists(path))
+        {
+            string[] yeetLines = File.ReadAllLines(path);
+            foreach(string yeet in yeetLines)
+            {
+                string[] yeets = yeet.Split(":");
+                cordinates.Add(yeets[0],yeets[1]);
+            }
+        }
+        try
+        {
+            forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Oulu,Finland,FI?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
+        }
+        catch(Exception  e){
+            Console.WriteLine(e);
+        }
+
     }
+
 
     public class WeatherForecast
     {
-        public DateTime Date { get; set; }
+        public float queryCost { get; set; }
+        public float latitude { get; set; }
+        public float longitude { get; set; }
+        public string resolvedAddress { get; set; }
+        public string address { get; set; }
+        public string timezone { get; set; }
+        public double tzoffset { get; set; }
+        public string description { get; set; }
 
-        public int TemperatureC { get; set; }
+        public Days[] days { get; set; }
+        public alerts[] alert { get; set; }
+        public stations[] station { get; set; }
+        public currentConditions conditions { get; set; }
+    }
 
-        public string? Summary { get; set; }
+    public class Days
+    {
+        public string datetime { get; set; }
+        public float datetimeEpoch { get; set; }
+        public float tempmax { get; set; }
+        public float tempmin { get; set; }
+        public float temp { get; set; }
+        public float feelslikemax { get; set; }
+        public float feelslikemin { get; set; }
+        public float feelslike { get; set; }
+        public float dew { get; set; }
+        public float humidity { get; set; }
+        public float precip { get; set; }
+        public float precipprob { get; set; }
+        public float precipcover { get; set; }
+        public string[] preciptype { get; set; }
+        public float snow { get; set; }
+        public float snowdepth { get; set; }
+        public float windgust { get; set; }
+        public float windspeed { get; set; }
+        public float winddir { get; set; }
+        public float pressure { get; set; }
+        public float cloudcover { get; set; }
+        public float visibility { get; set; }
+        public float solarradiation { get; set; }
+        public float solarenergy { get; set; }
+        public float uvindex { get; set; }
+        public float severerisk { get; set; }
+        public string sunrise { get; set; }
+        public float sunriseEpoch { get; set; }
+        public string sunset { get; set; }
+        public float sunsetEpoch { get; set; }
+        public float moonphase { get; set; }
+        public string conditions { get; set; }
+        public string description { get; set; }
+        public string icon { get; set; }
+        public string[] stations { get; set; }
+        public string source { get; set; }
+        public Hours[] hours { get; set; }
 
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+    public class Hours
+    {
+        public string datetime { get; set; }
+        public float datetimeEpoch { get; set; }
+        public float temp { get; set; }
+        public float feelslike { get; set; }
+        public float humidity { get; set; }
+        public float dew { get; set; }
+        public float precip { get; set; }
+        public float precipprob { get; set; }
+        public float snow { get; set; }
+        public float snowdepth { get; set; }
+        public string[] preciptype { get; set; }
+        public float windgust { get; set; }
+        public float windspeed { get; set; }
+        public float winddir { get; set; }
+        public float pressure { get; set; }
+        public float visibillity { get; set; }
+        public float cloudcover { get; set; }
+        public float solarradiation { get; set; }
+        public float solarenergy { get; set; }
+        public float uvindex { get; set; }
+        public float severerisk { get; set; }
+        public string conditions { get; set; }
+        public string icon { get; set; }
+        public string[] stations { get; set; }
+        public string source { get; set; }
+    }
+
+    public class alerts
+    {
+        public string events { get; set; }
+        public string headline { get; set; }
+        public string ends { get; set; }
+        public float endsEpoch { get; set; }
+        public string onset { get; set; }
+        public float onsetEpoch { get; set; }
+        public string id { get; set; }
+        public string language { get; set; }
+        public string link { get; set; }
+        public string description { get; set; }
+
+    }
+
+    public class stations
+    {
+        public float distance { get; set; }
+        public float latitude { get; set; }
+        public float longitude { get; set; }
+        public float useCount { get; set; }
+        public string id { get; set; }
+        public string name { get; set; }
+        public float quality { get; set; }
+        public float contribution { get; set; }
+    }
+
+    public class currentConditions
+    {
+        public string datetime { get; set; }
+        public float datetimeEpoch { get; set; }
+        public float temp { get; set; }
+        public float feelslike { get; set; }
+        public float humidity { get; set; }
+        public float dew { get; set; }
+        public float precip { get; set; }
+        public float precipprob { get; set; }
+        public float snow { get; set; }
+        public float snowdepth { get; set; }
+        public string[] preciptype { get; set; }
+        public float windgust { get; set; }
+        public float windspeed { get; set; }
+        public float winddir { get; set; }
+        public float pressure { get; set; }
+        public float visibillity { get; set; }
+        public float cloudcover { get; set; }
+        public float solarradiation { get; set; }
+        public float solarenergy { get; set; }
+        public float uvindex { get; set; }
+        public float severerisk { get; set; }
+        public string conditions { get; set; }
+        public string icon { get; set; }
+        public string[] stations { get; set; }
+        public string source { get; set; }
     }
 }
