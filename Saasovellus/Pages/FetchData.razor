@@ -1,5 +1,6 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -113,9 +114,9 @@ else
 		{
 			forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + @location + "?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
 		}
-		catch (Exception e)
+		catch (HttpRequestException e)
 		{
-			Console.WriteLine(e);
+			await JsRuntime.InvokeVoidAsync("alert", "City not found\nTry adding city abbreviation as suffix.\nExample: Oulu FI");
 		}
 	}
 
