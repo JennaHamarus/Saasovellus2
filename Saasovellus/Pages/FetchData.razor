@@ -40,23 +40,6 @@ else
         <tbody>
             @foreach (var item in forecast.days[1].hours)
             {
-                /*
-                if ((int)item.temp < 0)
-                {
-                    kuvaus = "<img src='linkki'>";
-                    if ((int)item.temp < -10)
-                    {
-                        kuvaus = "vitun kylmä";
-                    }
-                }
-                else
-                {
-                    kuvaus = "kuuma";
-                    if ((int)item.temp > 10)
-                    {
-                        kuvaus = "vitun kuuma";
-                    }
-                }*/
                 <tr>
                     <td>@(item.datetime)</td>
                     <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
