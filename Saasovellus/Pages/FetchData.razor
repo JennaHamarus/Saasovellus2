@@ -5,16 +5,17 @@
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
-
-
-<form action="/fetchdata">
-    <label for="fname">Sijainti</label>
+<br />
+<form @onsubmit="GetDatas">
+    <label for="fname">Location</label>
     <input type="text" @bind="location" />
-    <br><br>
-    <input type="submit" value="Submit" @onclick="GetCoords">
+    @if (forecast != null)
+    {
+        <p><code>Currently set to: @forecast.resolvedAddress </code></p>
+    }
+    <input type="button" value="Submit" @onclick="GetDatas">
 </form>
-
+<br />
 @if (forecast == null)
 {
     <p><em>Loading...</em></p>
@@ -25,7 +26,7 @@ else
     int luku = 0;
     string kuvaus;
 
-    <p>@(forecast.GetType())</p>
+    @* <p>@(forecast.GetType())</p> *@
     <table class="table">
         <thead>
             <tr>
@@ -107,11 +108,12 @@ else
     </table>
 }
 
+
 @code {
     private WeatherForecast? forecast;
 
 
-    string location = "";
+    string? location = "Ouagadougou";
 
     public static void GetCoords()
     {
@@ -120,27 +122,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Dictionary<string, string> cordinates = new Dictionary<string, string>();
-        string path = @"~/sample-data/coordinates.txt";
-        if (File.Exists(path))
-        {
-            string[] yeetLines = File.ReadAllLines(path);
-            foreach(string yeet in yeetLines)
-            {
-                string[] yeets = yeet.Split(":");
-                cordinates.Add(yeets[0],yeets[1]);
-            }
-        }
-        try
-        {
-            forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Oulu,Finland,FI?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
-        }
-        catch(Exception  e){
-            Console.WriteLine(e);
-        }
-
+        await GetDatas();
     }
 
+    async Task GetDatas()
+    {
+        try
+        {
+            forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + @location + "?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
 
     public class WeatherForecast
     {
