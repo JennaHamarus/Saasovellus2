@@ -24,6 +24,8 @@ else
     @* Jos on objekti, tehää taulukko *@
     int luku = 0;
     string kuvaus;
+
+    <p>@(forecast.GetType())</p>
     <table class="table">
         <thead>
             <tr>
@@ -54,8 +56,49 @@ else
                 }
                 <tr>
                     <td>@(item.datetime)</td>
-                    <td>@((int)item.temp) °C</td>
+                    <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
                     <td>@((int)item.temp) F</td>
+
+                    <td>@kuvaus</td>
+                </tr>
+                luku++;
+            }
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in forecast.days)
+            {
+                if ((int)item.temp < 0)
+                {
+                    kuvaus = "<img src='linkki'>";
+                    if ((int)item.temp < -10)
+                    {
+                        kuvaus = "vitun kylmä";
+                    }
+                }
+                else
+                {
+                    kuvaus = "kuuma";
+                    if ((int)item.temp > 10)
+                    {
+                        kuvaus = "vitun kuuma";
+                    }
+                }
+                <tr>
+                    <td>@(item.datetime)</td>
+                    <td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
+                    <td>@((int)item.temp) F</td>
+
                     <td>@kuvaus</td>
                 </tr>
                 luku++;
@@ -90,7 +133,7 @@ else
         }
         try
         {
-            forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Mikkeli,Finland,FI?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
+            forecast = await Http.GetFromJsonAsync<WeatherForecast>("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Oulu,Finland,FI?key=K4JTCCH9FAMCTAY2KB3WGL3AR");
         }
         catch(Exception  e){
             Console.WriteLine(e);
@@ -111,7 +154,7 @@ else
         public string description { get; set; }
 
         public Days[] days { get; set; }
-        public alerts alert { get; set; }
+        public alerts[] alert { get; set; }
         public stations[] station { get; set; }
         public currentConditions conditions { get; set; }
     }
