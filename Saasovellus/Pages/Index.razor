@@ -27,6 +27,8 @@ else
 	string kuvaus;
 	String hourMinute = DateTime.Now.ToString("HH");
 	<h2>Current weather</h2>
+		<div style="    overflow-x: auto;
+    white-space: nowrap;">
 	<table class="table">
 		<thead>
 			<tr>
@@ -51,6 +53,7 @@ else
 			</tr>
 		</tbody>
 	</table>
+	</div>
 	@if (forecast.alerts != null && forecast.alerts.Length > 0)
 	{
 		<code>Alert: </code>
@@ -62,6 +65,8 @@ else
 	}
 
 	<h3>Hourly weather</h3>
+		<div style="    overflow-x: auto;
+    white-space: nowrap;">
 	<table class="table">
 		<thead>
 			<tr>
@@ -91,31 +96,36 @@ else
 			}
 		</tbody>
 	</table>
+	</div>
 	<h3>Weekly weather</h3>
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Date</th>
-				<th>Min. (°C)</th>
-				<th>Max. (°C)</th>
-				<th>Rainfall</th>
-				<th>Summary</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var item in forecast.days)
-			{
+	<div style="    overflow-x: auto;
+    white-space: nowrap;">
+		<table class="table">
+			<thead>
 				<tr>
-					<td>@(item.datetime)</td>
-					<td>@((int)(((int)item.tempmin - 32) * 0.555)) °C</td>
-					<td>@((int)(((int)item.tempmax - 32) * 0.555)) °C</td>
-					<td>@(item.precip) mm</td>
-					<td>@item.description</td>
+					<th>Date</th>
+					<th>Min. (°C)</th>
+					<th>Max. (°C)</th>
+					<th>Rainfall</th>
+					<th>Summary</th>
 				</tr>
-				luku++;
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach (var item in forecast.days)
+				{
+					<tr>
+						<td>@(item.datetime)</td>
+						<td>@((int)(((int)item.tempmin - 32) * 0.555)) °C</td>
+						<td>@((int)(((int)item.tempmax - 32) * 0.555)) °C</td>
+						<td>@(item.precip) mm</td>
+						<td>@item.description</td>
+					</tr>
+					luku++;
+				}
+			</tbody>
+		</table>
+	</div>
+
 }
 
 
