@@ -25,8 +25,32 @@ else
 	@* Jos on objekti, tehää taulukko *@
 	int luku = 0;
 	string kuvaus;
-
-
+	String hourMinute = DateTime.Now.ToString("HH");
+	<h1>Current weather</h1>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Temp. (C)</th>
+				<th>Temp. (F)</th>
+				<th>Wind</th>
+				<th>Rainfall</th>
+				<th>Humidity</th>
+				<th>Summary</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>@(forecast.days[0].hours[Int32.Parse(hourMinute)].datetime)</td>
+				<td>@((int)(((int)forecast.days[0].hours[Int32.Parse(hourMinute)].temp - 32) * 0.555)) °C</td>
+				<td>@((int)forecast.days[0].hours[Int32.Parse(hourMinute)].temp) F</td>
+				<td>@(forecast.days[0].hours[Int32.Parse(hourMinute)].windspeed)</td>
+				<td>@(forecast.days[0].hours[Int32.Parse(hourMinute)].precip) mm</td>
+				<td>@(forecast.days[0].hours[Int32.Parse(hourMinute)].humidity)%</td>
+				<td>@(forecast.days[0].hours[Int32.Parse(hourMinute)].conditions)</td>
+			</tr>
+		</tbody>
+	</table>
 	@if (forecast.alerts != null && forecast.alerts.Length > 0)
 	{
 		<code>Alert: </code>
@@ -37,7 +61,7 @@ else
 		}
 	}
 
-
+	<h2>Hourly weather</h2>
 	<table class="table">
 		<thead>
 			<tr>
@@ -52,7 +76,7 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var item in forecast.days[1].hours)
+			@foreach (var item in forecast.days[0].hours)
 			{
 				<tr>
 					<td>@(item.datetime)</td>
@@ -67,7 +91,7 @@ else
 			}
 		</tbody>
 	</table>
-
+	<h2>Weekly weather</h2>
 	<table class="table">
 		<thead>
 			<tr>
