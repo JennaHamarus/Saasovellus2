@@ -1,4 +1,4 @@
-﻿@page "/wfsdata"
+﻿@* @page "/wfsdata"
 
 @using System.Net.Http
 @inject HttpClient HttpClient
@@ -67,12 +67,18 @@
     {
         try
         {
+//<<<<<<< locationSearch
+//            // HttpResponseMessage response = await HttpClient.GetAsync(wfsUrl + "?" + wfsRequest);
+//            HttpResponseMessage response = await HttpClient.GetAsync("sample-data/weather.json");
+//            response.EnsureSuccessStatusCode(); // Tarkista, että pyyntö onnistui
+//=======
             //Määritellään API URL
             string apiUrl = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m&timezone=auto";
 
             //HTTP GET request
             HttpResponseMessage response = await HttpClient.GetAsync(apiUrl);
             response.EnsureSuccessStatusCode();
+//>>>>>>> dev
             string responseData = await response.Content.ReadAsStringAsync();
             return responseData;
         }
@@ -104,3 +110,4 @@
         }
     }
 }
+ *@
