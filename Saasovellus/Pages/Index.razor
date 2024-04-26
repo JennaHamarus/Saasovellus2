@@ -70,8 +70,9 @@ else
 		<thead>
 			<tr>
 				<th>Date</th>
-				<th>Temp. (C)</th>
-				<th>Temp. (F)</th>
+				<th>Min. (°C)</th>
+				<th>Max. (°C)</th>
+				<th>Rainfall</th>
 				<th>Summary</th>
 			</tr>
 		</thead>
@@ -80,9 +81,9 @@ else
 			{
 				<tr>
 					<td>@(item.datetime)</td>
-					<td>@((int)(((int)item.temp - 32) * 0.555)) °C</td>
-					<td>@((int)item.temp) F</td>
-
+					<td>@((int)(((int)item.tempmin - 32) * 0.555)) °C</td>
+					<td>@((int)(((int)item.tempmax - 32) * 0.555)) °C</td>
+					<td>@(item.precip) mm</td>
 					<td>@item.description</td>
 				</tr>
 				luku++;
